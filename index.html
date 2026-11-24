@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday, My Bachu ❤️</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Georgia,serif;color:#74345f;
+ background:linear-gradient(135deg,#ffe0ed,#e8d9ff,#fff0f6);
+ text-align:center;overflow-x:hidden
+}
+header{padding:65px 15px 35px}
+h1{font-size:clamp(2.5rem,8vw,5rem);margin:10px;color:#d63384}
+h2{color:#c04491}
+p{line-height:1.8}
+section{
+ background:#ffffffc9;margin:25px auto;padding:25px;
+ border-radius:25px;max-width:850px;width:92%;
+ box-shadow:0 8px 25px #c77da544
+}
+button{
+ border:0;border-radius:30px;padding:13px 23px;
+ margin:7px;background:#e84c9b;color:white;
+ font-size:16px;cursor:pointer
+}
+button:hover{transform:scale(1.06);background:#c52c80}
+#cake{font-size:100px;cursor:pointer;display:inline-block}
+#candles{font-size:32px}
+#balloons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.balloon{font-size:45px;cursor:pointer;transition:.2s}
+.balloon:hover{transform:translateY(-8px)}
+#gameArea{
+ height:300px;background:#ffe5f0;border-radius:18px;
+ position:relative;overflow:hidden
+}
+#cakeItem{position:absolute;font-size:45px;cursor:pointer;left:45%;top:40%}
+.card{background:#fff0f7;border-radius:18px;padding:18px;margin:12px}
+#letter{display:none;text-align:left;white-space:pre-line}
+#musicStatus{font-size:13px}
+footer{padding:30px;color:#9d4a7e}
+.heart{position:fixed;bottom:-30px;pointer-events:none;
+ animation:float 7s linear forwards;z-index:5}
+@keyframes float{to{transform:translateY(-110vh) rotate(360deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<header>
+ <div style="font-size:55px">🎀 💗 🎂 💗 🎀</div>
+ <h1>Happy Birthday!</h1>
+ <h2>My Pudku, My Bachu, My Sweetheart ❤️</h2>
+ <p>Today is all about the most special person in my world. 🥹</p>
+ <button onclick="startExperience()">Open Your Surprise 💌</button>
+</header>
+
+<section>
+ <h2>🎂 Your Special Birthday Cake</h2>
+ <p>Make a wish, my bachu! Tap the cake to blow out the candles.</p>
+ <div id="candles">🕯️ 🕯️ 🕯️</div>
+ <div id="cake" onclick="blowCandles()">🎂</div>
+ <p id="cakeMessage">Your birthday magic is waiting! ✨</p>
+ <button onclick="relight()">Light Candles Again 🕯️</button>
+</section>
+
+<section>
+ <h2>🎈 Pop the Balloons!</h2>
+ <p>Pop all 10 balloons to reveal your secret birthday wishes.</p>
+ <div id="balloons"></div>
+ <h3 id="balloonScore">Balloons popped: 0 / 10</h3>
+ <p id="balloonMessage"></p>
+</section>
+
+<section>
+ <h2>🍰 Catch the Birthday Cake!</h2>
+ <p>Click the moving cake before it disappears. Catch 5 cakes to win!</p>
+ <div id="gameArea">
+  <span id="cakeItem" onclick="catchCake()">🎂</span>
+ </div>
+ <h3 id="cakeScore">Cakes caught: 0 / 5</h3>
+ <button onclick="startCakeGame()">Start Game 🎮</button>
+</section>
+
+<section>
+ <h2>🧩 A Little Riddle for You</h2>
+ <p style="font-size:20px">
+ I become brighter when you smile.<br>
+ I make ordinary days special.<br>
+ I cannot be wrapped in a gift box,<br>
+ but I am one of life's greatest gifts.<br><br>
+ What am I? 💗
+ </p>
+ <button onclick="document.getElementById('answer').style.display='block'">
+ Reveal Answer 💡
+ </button>
+ <h3 id="answer" style="display:none">Your happiness, my bachu! 🥹❤️</h3>
+</section>
+
+<section>
+ <h2>💌 A Letter From My Heart</h2>
+ <p>A little surprise, written just for you.</p>
+ <button onclick="showLetter()">Open My Letter ❤️</button>
+ <div id="letter"></div>
+</section>
+
+<section>
+ <h2>🌷 Your Birthday Wishes</h2>
+ <div class="card">May your smile always shine brighter than every star. ✨</div>
+ <div class="card">May every dream you carry find its way into reality. 🌈</div>
+ <div class="card">May your days be filled with laughter, peace and love. 💕</div>
+ <div class="card">May you always remember how precious and special you are. 🥹</div>
+</section>
+
+<section>
+ <h2>🎵 Birthday Music</h2>
+ <p>Press play to hear your special birthday melody.</p>
+ <button onclick="toggleMusic()" id="musicButton">▶ Play Birthday Music</button>
+ <p id="musicStatus">Music is ready. 🎶</p>
+</section>
+
+<footer>
+ Made with endless love for my sweetest bachu. ❤️<br>
+ Happy Birthday, my world! 🎂
+</footer>
+
+<script>
+const wishes=[
+ "You deserve all the happiness in the universe! 💗",
+ "Never stop smiling, my sweetheart! 🥹",
+ "May every little dream come true! 🌷",
+ "You make ordinary days feel magical! ✨",
+ "Keep shining, my little princess! 👑",
+ "Sending you a million hugs and wishes! 💕",
+ "May your future be beautiful! 🌈",
+ "You are someone's favourite person! ❤️",
+ "Keep laughing and enjoying life! 🎀",
+ "Happy birthday to my whole world! 🎂"
+];
+
+let popped=0;
+const balloons=document.getElementById("balloons");
+wishes.forEach((wish,i)=>{
+ const b=document.createElement("span");
+ b.className="balloon";
+ b.textContent="🎈";
+ b.title="Pop me!";
+ b.onclick=()=>{
+  if(b.dataset.popped)return;
+  b.dataset.popped="yes";
+  b.textContent="💥";
+  popped++;
+  document.getElementById("balloonScore").textContent=
+   "Balloons popped: "+popped+" / 10";
+  document.getElementById("balloonMessage").innerHTML+=
+   "<div class='card'>"+wish+"</div>";
+  if(popped===10)alert("You found all 10 wishes! Happy Birthday! 🎉");
+ };
+ balloons.appendChild(b);
+});
+
+function blowCandles(){
+ document.getElementById("candles").textContent="✨ ✨ ✨";
+ document.getElementById("cakeMessage").textContent=
+ "Your wish has been sent to the universe! 💗";
+ document.getElementById("cake").textContent="🍰";
+}
+function relight(){
+ document.getElementById("candles").textContent="🕯️ 🕯️ 🕯️";
+ document.getElementById("cake").textContent="🎂";
+ document.getElementById("cakeMessage").textContent="Make another wish! ✨";
+}
+let caught=0,gameOn=false;
+function moveCake(){
+ if(!gameOn)return;
+ const item=document.getElementById("cakeItem");
+ const area=document.getElementById("gameArea");
+ item.style.left=Math.random()*(area.clientWidth-55)+"px";
+ item.style.top=Math.random()*(area.clientHeight-55)+"px";
+}
+function startCakeGame(){
+ caught=0;gameOn=true;
+ document.getElementById("cakeScore").textContent="Cakes caught: 0 / 5";
+ moveCake();
+}
+function catchCake(){
+ if(!gameOn)return;
+ caught++;
+ document.getElementById("cakeScore").textContent="Cakes caught: "+caught+" / 5";
+ if(caught>=5){
+  gameOn=false;
+  document.getElementById("cakeScore").textContent="You won! Birthday champion! 🏆";
+  alert("Congratulations, my bachu! 🎉");
+ }else moveCake();
+}
+function startExperience(){
+ document.getElementById("cake").scrollIntoView({behavior:"smooth"});
+ toggleMusic();
+}
+const letterText=`My sweetest pudku, my bachu, my sweetheart, my everything and my whole world. ❤️
+
+Happiest Birthday to the most special person in my life! 🎂🥹
+
+Today is not just another day. It is the birthday of someone who makes life feel a little more beautiful, someone whose smile can make an ordinary moment feel unforgettable. I hope this day brings you as much happiness as you bring into the lives of people around you.
+
+First of all, I want to wish you endless happiness. May your smile never disappear, may your heart always find reasons to feel peaceful, and may every new day bring you something beautiful. You deserve kindness, respect, love, success and every wonderful thing life has to offer. 💗
+
+My bachu, never stop believing in yourself. You are capable of achieving so many beautiful things. Keep following your dreams, even when the road becomes difficult. Take your time, learn new things, make memories, laugh loudly and enjoy the little moments. You do not need to be perfect to be amazing.
+
+I wish you a future full of opportunities, adventures and unforgettable memories. May you always find courage when you need it, strength when things become difficult, and people who appreciate the wonderful person you are. 🌷
+
+Thank you for all the little moments, the conversations, the smiles and the memories. Sometimes the smallest things become the biggest treasures. I hope you always know that you matter and that your happiness is important.
+
+On your birthday, I wish you good health, peace of mind, confidence, success in your studies and dreams, and countless reasons to smile. May this new chapter of your life be even more beautiful than the last one. 🌈
+
+And whenever you feel that life is getting difficult, remember to be gentle with yourself. You are allowed to rest, grow, change your mind and start again. There is no need to rush through life. Your own journey is special.
+
+I hope you get to eat your favourite food, enjoy your favourite music, receive lovely surprises and spend this day surrounded by happiness. You deserve a birthday filled with laughter and sweet memories. 🎀
+
+My little princess, keep shining. Keep being curious, kind, funny and wonderfully yourself. Never let the world make you forget your worth.
+
+I cannot fit every wish into one letter, but here is the biggest one: I hope life treats you beautifully, and I hope you always have a reason to smile.
+
+Happy Birthday once again, my pudku, my bachu, my sweetheart, my everything and my world. ❤️🎂
+
+With endless love and the warmest birthday wishes. 💗`;
+
+function showLetter(){
+ const el=document.getElementById("letter");
+ el.style.display="block";
+ el.textContent=letterText;
+}
+
+// Original synthesized birthday melody using Web Audio.
+let audioCtx=null,oscillators=[],musicPlaying=false,timer=null;
+const melody=[523,523,587,523,698,659,523,523,587,523,784,698,
+523,523,1046,880,698,659,587,932,932,880,698,784,698];
+let noteIndex=0;
+function playNote(){
+ if(!musicPlaying||!audioCtx)return;
+ const osc=audioCtx.createOscillator();
+ const gain=audioCtx.createGain();
+ osc.type="sine";
+ osc.frequency.value=melody[noteIndex%melody.length];
+ gain.gain.setValueAtTime(.0001,audioCtx.currentTime);
+ gain.gain.exponentialRampToValueAtTime(.10,audioCtx.currentTime+.04);
+ gain.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+.3);
+ osc.connect(gain);gain.connect(audioCtx.destination);
+ osc.start();osc.stop(audioCtx.currentTime+.32);
+ noteIndex++;
+ timer=setTimeout(playNote,360);
+}
+async function toggleMusic(){
+ if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+ if(audioCtx.state==="suspended")await audioCtx.resume();
+ musicPlaying=!musicPlaying;
+ document.getElementById("musicButton").textContent=
+ musicPlaying?"⏸ Pause Birthday Music":"▶ Play Birthday Music";
+ document.getElementById("musicStatus").textContent=
+ musicPlaying?"Playing your birthday melody 🎶":"Music paused.";
+ if(musicPlaying)playNote();
+ else clearTimeout(timer);
+}
+
+// Floating hearts
+setInterval(()=>{
+ const h=document.createElement("div");
+ h.className="heart";h.textContent=["💗","💕","✨","🌸"][Math.floor(Math.random()*4)];
+ h.style.left=Math.random()*100+"vw";
+ h.style.fontSize=(18+Math.random()*22)+"px";
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),7000);
+},700);
+</script>
+</body>
+</html>
